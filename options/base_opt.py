@@ -29,6 +29,7 @@ class BaseOptions():
         parser.add_argument('--init_gain', type=float, default=0.02, help='scaling factor for normal, xavier and orthogonal.')
         parser.add_argument('--no_dropout', action='store_true', help='no dropout for the generator')
         parser.add_argument('--norm_type', type=str, default='bn2d', help='Normalization [bn1d | bn2d | in2d | in2d | none]')
+        parser.add_argument('--net_name', type=str, default='colorization', help='Which network to train [colorization | cyclegan].')
 
         # dataset parameters
         parser.add_argument('--num_threads', default=0, type=int, help='# threads for loading data')

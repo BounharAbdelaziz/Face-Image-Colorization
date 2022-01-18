@@ -17,7 +17,6 @@ class TrainOptions(BaseOptions):
         
         # training parameters
         parser.add_argument('--dataset_name', type=str, default='FFHQ', help='Which dataset to use.')
-        parser.add_argument('--net_name', type=str, default='colorization', help='Which network to train [colorization | cyclegan].')
         parser.add_argument('--n_epochs', type=int, default=500, help='number of epochs with the initial learning rate')
         parser.add_argument('--n_epochs_decay', type=int, default=100, help='number of epochs to linearly decay learning rate to zero')
         parser.add_argument('--optimizer', type=str, default="Adam", help='Optimizer to use')
