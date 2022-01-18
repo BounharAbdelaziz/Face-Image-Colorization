@@ -44,22 +44,25 @@ class ActivationLayer(nn.Module):
 
 class NormalizationLayer(nn.Module):
 
-    def __init__(self, in_features, norm_type='bn1d'):
+    def __init__(self, in_features, norm_type='IN2D'):
         super().__init__()
 
-        if norm_type == 'bn2d' :
+        if norm_type.upper() == 'BN2D' :
             self.norm = nn.BatchNorm2d(in_features)
 
-        elif norm_type == 'in2d' :
+        elif norm_type.upper() == 'IN2D' :
             self.norm = nn.InstanceNorm2d(in_features)
 
-        elif norm_type == 'bn1d' :
+        elif norm_type.upper() == 'BN1D' :
             self.norm = nn.BatchNorm1d(in_features)
 
-        elif norm_type == 'in1d' :
+        elif norm_type.upper() == 'IN1D' :
             self.norm = nn.InstanceNorm1d(in_features)
 
-        elif norm_type == 'none' :
+        elif norm_type.upper() == 'ADAIN':
+            self.norm = AdaptiveInstanceNorm(in_features)
+
+        elif norm_type.upper() == 'NONE' :
             self.norm = lambda x : x * 1.0
 
         else:
@@ -68,6 +71,32 @@ class NormalizationLayer(nn.Module):
     def forward(self, x):
         out = self.norm(x)
         return out
+
+# -----------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#.
+
+
+class AdaptiveInstanceNorm(nn.Module):
+    def __init__(self, in_features):
+        super().__init__()
+        self.norm = nn.InstanceNorm2d(in_features)
+
+    def calc_mean_std_4D(self, feat, eps=1e-5):
+        # eps is a small value added to the variance to avoid divide-by-zero.
+        size = feat.size()
+        assert (len(size) == 4)
+        N, C = size[:2]
+        feat_var = feat.view(N, C, -1).var(dim=2) + eps
+        feat_std = feat_var.sqrt().view(N, C, 1, 1)
+        feat_mean = feat.view(N, C, -1).mean(dim=2).view(N, C, 1, 1)
+        return feat_mean, feat_std
+
+    def forward(self, input, style):
+        style_mean, style_std = self.calc_mean_std_4D(style)
+        out = self.norm(input)
+        size = input.size()
+        out = style_std.expand(size) * out + style_mean.expand(size)
+        return 
 
 # -----------------------------------------------------------------------------#
 # -----------------------------------------------------------------------------#
@@ -82,6 +111,7 @@ class Conv2DLayer(nn.Module):
         self.norm_before = norm_before
         self.scale_factor = scale_factor
         self.is_debug = is_debug
+        self.norm_type = norm_type
         
         # upsampling or downsampling
         stride = 2 if scale == 'down' else 1
@@ -108,13 +138,19 @@ class Conv2DLayer(nn.Module):
         out = self.conv(out)
 
         if self.norm_before :
-            out = self.norm(out)
+            if self.norm_type.upper() == 'ADAIN':
+                out = self.norm(out, out)
+            else:
+                out = self.norm(out)
+
             out = self.activation(out)
 
         else :
             out = self.activation(out)
-            out = self.norm(out)
-
+            if self.norm_type.upper() == 'ADAIN':
+                out = self.norm(out, out)
+            else:
+                out = self.norm(out)
         return out
 
 # -----------------------------------------------------------------------------#

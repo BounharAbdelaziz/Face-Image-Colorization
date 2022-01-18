@@ -6,9 +6,9 @@ from model.block import Conv2DLayer, ConvResidualBlock
 class Generator(nn.Module):
     """ Generative network of CycleGAN"""
     
-    def __init__(self, in_channels=1, out_channels=3, num_features=64, n_res_layers=9, norm_type="in2d", activation='relu', **kwargs) -> None:
+    def __init__(self, in_channels=1, out_channels=3, num_features=64, n_res_layers=9, norm_type="adain", activation='relu', **kwargs) -> None:
         super(Generator, self).__init__()
-        self.initial = Conv2DLayer( in_channels, num_features, kernel_size=7, padding=3, padding_mode="reflect", scale='none', bias=True, norm_type='in2d', norm_before=True, 
+        self.initial = Conv2DLayer( in_channels, num_features, kernel_size=7, padding=3, padding_mode="reflect", scale='none', bias=True, norm_type=norm_type, norm_before=True, 
                                     activation=activation, alpha_relu=0.15, inplace=True, **kwargs)
         
         self.down_blocks = nn.ModuleList(

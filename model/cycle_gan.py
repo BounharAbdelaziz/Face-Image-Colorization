@@ -122,7 +122,7 @@ class CycleGAN(BaseModel):
                 # Discriminator 1 discriminates RGB images
                 # Discriminator 2 discriminates Gray images
 
-                with torch.autograd.set_detect_anomaly(True):
+                with torch.autograd.set_detect_anomaly(self.options.detect_anomaly):
                     
                     # Train Discriminators 1 and 2
                     with torch.cuda.amp.autocast():
