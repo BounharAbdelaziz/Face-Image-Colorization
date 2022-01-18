@@ -3,6 +3,9 @@ import torch
 import os
 import random
 from model.optimization import init_weights, define_network
+from skimage import io
+import cv2 as cv
+from collections import OrderedDict
 
 # -----------------------------------------------------------------------------#
 # -----------------------------------------------------------------------------#
@@ -105,7 +108,14 @@ def setup_network(network, hyperparams, type="generator"):
 def load_model(model, PATH, device='cuda', mode='test'):
     print(f'[INFO] Loading model from {PATH} into device: {device} in mode:{mode}.')
 
-    model.load_state_dict(torch.load(PATH))
+    state_dict = torch.load(PATH)
+
+    new_state_dict = OrderedDict()
+    for k, v in state_dict.items():
+        name = k[7:] # remove `module.`
+        new_state_dict[name] = v
+
+    model.load_state_dict(new_state_dict)
     model.to(device)
 
     if mode == 'train':
@@ -151,6 +161,25 @@ def print_kwargs(**kwargs):
 
 def get_last_lr(optimizer):
     return optimizer.param_groups[0]['lr']
+
+# -----------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------#
+
+def tensor_to_img(tensor, save_path=None, size=None, normal=False):
+    img_array = tensor.squeeze().data.cpu().numpy()
+    img_array = img_array.transpose(1, 2, 0)
+    if size is not None:
+        img_array = cv.resize(img_array, size, interpolation=cv.INTER_LINEAR)
+    if normal:
+        #  img_array = (img_array - img_array.min()) / (img_array.max() - img_array.min())
+        img_array = (img_array + 1.) / 2. * 255.
+        img_array = img_array.clip(0, 255)
+    if save_path:
+        if img_array.max() <= 1:
+            img_array = (img_array * 255).astype(np.uint8)
+        io.imsave(save_path, img_array)
+
+    return img_array.astype(np.uint8)
 
 # -----------------------------------------------------------------------------#
 # -----------------------------------------------------------------------------#
