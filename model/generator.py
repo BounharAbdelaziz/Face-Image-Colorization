@@ -4,7 +4,6 @@ import torch.nn as nn
 from model.block import Conv2DLayer, ConvResidualBlock
 
 class Generator(nn.Module):
-    """ Generative network of CycleGAN"""
     
     def __init__(self, in_channels=1, out_channels=3, num_features=64, n_res_layers=9, norm_type="adain", activation='relu', **kwargs) -> None:
         super(Generator, self).__init__()
@@ -38,6 +37,11 @@ class Generator(nn.Module):
 
         self.last = nn.Conv2d(num_features, out_channels, kernel_size=7, padding=3, padding_mode="reflect")
 
+        # contrast and brightness are learnable parameters
+        self.alpha = nn.Parameter(torch.rand(1), requires_grad=True)
+        self.beta = nn.Parameter(torch.rand(1), requires_grad=True)
+
+
     def forward(self, x):
 
         x = self.initial(x)
@@ -50,4 +54,9 @@ class Generator(nn.Module):
         for layer in self.up_blocks:
             x = layer(x)
         
-        return  torch.tanh(self.last(x))
+        x = torch.tanh(self.last(x))
+
+        # adjusting brightness and contrast
+        x = x*self.alpha + self.beta
+
+        return x

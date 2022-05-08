@@ -3,7 +3,6 @@ import torch
 import torchvision
 
 from model.loss import L2Loss, L1Loss, PerceptualLoss
-
 import utils.helpers as helper
 from tqdm import tqdm
 import os
@@ -141,6 +140,9 @@ class ColorizationGAN(BaseModelGAN):
 
             # show advance
             with torch.no_grad():
+              print(f"[INFO] Learnable alpha : {self.generator.alpha}")
+              print(f"[INFO] Learnable beta : {self.generator.beta}")
+
               
               fake_rgb = fake_image_rgb[0][:3, :, :].reshape(1, 3, h, w)
               real_rgb = image_rgb[0][:3, :, :].reshape(1, 3, h, w)
