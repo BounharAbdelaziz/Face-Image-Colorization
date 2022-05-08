@@ -1,3 +1,4 @@
+from email.policy import strict
 import numpy as np
 import torch
 import os
@@ -17,16 +18,18 @@ def write_logs_tb(tb_writer_loss, tb_writer_fake, tb_writer_real, img_fake, img_
             'loss/{}'.format(k), v, global_step=step
         )
         
+    
+
+    tb_writer_real.add_image(
+        "Images/0_Gray", img_real_gray, global_step=step
+    )
+
     tb_writer_fake.add_image(
-        'Images/fake', img_fake, global_step=step
+        'Images/1_Fake', img_fake, global_step=step
     )
-
+    
     tb_writer_real.add_image(
-        "Images/Gray", img_real_gray, global_step=step
-    )
-
-    tb_writer_real.add_image(
-        "Images/Real", img_real, global_step=step
+        "Images/2_Real", img_real, global_step=step
     )
 
 
@@ -105,7 +108,7 @@ def setup_network(network, hyperparams, type="generator"):
 # -----------------------------------------------------------------------------#
 # -----------------------------------------------------------------------------#
 
-def load_model(model, PATH, device='cuda', mode='test'):
+def load_model(model, PATH, device='cuda', mode='test', missing_keys=None):
     print(f'[INFO] Loading model from {PATH} into device: {device} in mode:{mode}.')
 
     state_dict = torch.load(PATH)
@@ -113,9 +116,12 @@ def load_model(model, PATH, device='cuda', mode='test'):
     new_state_dict = OrderedDict()
     for k, v in state_dict.items():
         name = k[7:] # remove `module.`
-        new_state_dict[name] = v
+        if name == 'module.':
+          new_state_dict[name] = v
+        else:
+          new_state_dict[k] = v
 
-    model.load_state_dict(new_state_dict)
+    model.load_state_dict(new_state_dict, strict=False)#, missing_keys=missing_keys)
     model.to(device)
 
     if mode == 'train':
