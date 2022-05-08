@@ -13,7 +13,9 @@ class TrainOptions(BaseOptions):
 
         # network saving and loading parameters
         parser.add_argument('--save_weights_freq', type=int, default=5000, help='frequency of saving the training weights')
-        parser.add_argument('--continue_train', action='store_true', help='continue training: load the latest model')
+        parser.add_argument('--continue_training', action='store_true', help='continue training: load the latest model')
+        parser.add_argument('--load_ckpt', type=str, default='./check_points/', help='Which dataset to use.')
+        parser.add_argument('--load_iter', type=int, default='0', help='which iteration to load? if load_iter > 0, the code will load models by iter_[load_iter]; otherwise, the code will load models by [epoch]')
         
         # training parameters
         parser.add_argument('--dataset_name', type=str, default='FFHQ', help='Which dataset to use.')
