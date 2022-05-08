@@ -1,10 +1,8 @@
-from pickle import FALSE
 from model.base_nets.base_model import BaseModel
 import torch
 import torch.nn as nn
 import torchvision
 
-from model.loss import L2Loss, PerceptualLoss
 from model.generator import Generator
 from model.discriminator import Discriminator
 

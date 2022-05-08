@@ -5,7 +5,6 @@ from model.block import Conv2DLayer
 
 
 class Discriminator(nn.Module):
-    """ Discriminative network of CycleGAN"""
 
     def __init__(self, in_channels=3, features=[64, 128, 256, 512], norm_type="in2d", **kwargs):
         super(Discriminator, self).__init__()
