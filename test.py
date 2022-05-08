@@ -33,7 +33,12 @@ if __name__ == "__main__":
         print("-----------------------------------------------------")
         generator = load_model(generator, options.pretrained_path, device=hyperparams.device, mode='test')
         print("-----------------------------------------------------")
+        print(f"[INFO] Number of trainable parameters for the Generator : {compute_nbr_parameters(generator)}")
+        print("-----------------------------------------------------")
 
+        print(f"generator.alpha= {generator.alpha}")
+        print(f"generator.beta= {generator.beta}")
+        exit(0)
         # data
         dataset = TestDataset(options, hyperparams, do_transform=True)
         dataloader = DataLoader(dataset, batch_size=options.batch_size, shuffle=True, num_workers=hyperparams.num_threads) 
