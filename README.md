@@ -2,12 +2,12 @@
 
 In this repository, we provide Generative Models to adress the **Image Colorization** problem.
 
-The generative network is given a 512x512 input image in the B&W domain and generates the corresponding 512x512 image in the RGB domain.
+The generative network is given a high resolution 512x512 input image in the B&W domain and generates the corresponding 512x512 image in the RGB domain.
 
 
-[<img src="./for_readme/img/gray.PNG" width="350"/>](./for_readme/img/gray.PNG)
+[<img src="./for_readme/img/gray.PNG" width="350"/>](./for_readme/img/ffhq_22968_bnw.png)
 [<img src="./for_readme/img/arrow.jpg" width="100"/>](./for_readme/img/arrow.jpg)
-[<img src="./for_readme/img/color.PNG" width="350"/>](./for_readme/img/color.PNG)
+[<img src="./for_readme/img/color.PNG" width="350"/>](./for_readme/img/ffhq_22968_colorized.png)
 
 We followed **two approaches**, the first one is in a **supervised** way where we trained a [colorization GAN](/model/colorization_gan.py), where the loss is computed by comparing the output of the generative network with the ground truth.
 
