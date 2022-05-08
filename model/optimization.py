@@ -70,15 +70,17 @@ def init_net(net, init_type='kaiming', init_gain=0.02, gpu_ids=[]):
     return net 
 
 def get_optimizer(model, options):
+    
+    params = list(model.parameters())
 
     if options.optimizer.upper() == "ADAMW":
-      optimizer = AdamW(model.parameters(), lr=options.lr, betas=(options.beta1, 0.999), weight_decay=options.weight_decay)
+      optimizer = AdamW(params, lr=options.lr, betas=(options.beta1, 0.999), weight_decay=options.weight_decay)
 
     elif options.optimizer.upper() == "ADAM":
-      optimizer = Adam(model.parameters(), betas=(options.beta1, 0.999), lr=options.lr)
+      optimizer = Adam(params, betas=(options.beta1, 0.999), lr=options.lr)
 
     else:
-      optimizer = SGD(model.parameters(), lr=options.lr, weight_decay=options.weight_decay, momentum=0.9)
+      optimizer = SGD(params, lr=options.lr, weight_decay=options.weight_decay, momentum=0.9)
 
     return optimizer
 
